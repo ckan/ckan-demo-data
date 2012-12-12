@@ -1,12 +1,12 @@
 Installation
 ------------
 
-    virtualenv load_demo_data
-    . load_demo_data/bin/activate
-    mkdir load_demo_data/src
-    cd load_demo_data/src
-    git clone git://gist.github.com/4110454.git load_demo_data
-    pip install -r load_demo_data/pip-requirements.txt
+    virtualenv ckan-demo-data
+    . ckan-demo-data/bin/activate
+    mkdir ckan-demo-data/src
+    cd ckan-demo-data/src
+    git clone https://github.com/okfn/ckan-demo-data.git
+    pip install -r ckan-demo-data/pip-requirements.txt
 
 Usage
 -----
