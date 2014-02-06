@@ -10,8 +10,7 @@ import csv
 import urllib
 import json
 
-import ckanclient
-
+import ckanapi
 
 demodata = json.load(open('data.json'))
 
@@ -22,51 +21,30 @@ def create_demo_data(client):
     for name, group in demodata['groups'].items():
         print 'Creating group: %s' % name
         try:
-            client.group_register_post(group)
-        except ckanclient.CkanApiError:
-            client.group_entity_put(group)
+            client.action.group_create(**group)
+        except Exception as e:
+            print "Error creating group `{0}`: {1}".format(name, unicode(e))
+
 
 
 def create_dataset(client, dataset):
     print 'Uploading dataset: %s' % dataset['name']
     try:
-        client.package_register_post(dataset)
-    except ckanclient.CkanApiError:
-        client.package_entity_put(dataset)
-    for resource in dataset['resources']:
-        # lookupname = '%s::%s' % (dataset['name'], resource['description'])
-        lookupname = resource['url']
-        if lookupname in demodata['schemas']:
-            print 'Updating datastore for %s' % lookupname
-            fields = demodata['schemas'][lookupname]
-            fmt = resource['format']
-            if fmt.lower() == 'csv':
-                data = [row for row in
-                        csv.DictReader(urllib.urlopen(resource['url']))
-                        ]
-            elif fmt == 'json':
-                data = urllib.urlopen(resource['url']).read()
-            else:
-                print 'Cannot upload data from resource with format: %s' % resource['format']
-                continue
-            try:
-                client.action('datastore_create',
-                    resource_id=resource['id'],
-                    fields=fields,
-                    records=data
-                )
-            except:
-                print client.last_message
+        client.action.package_create(**dataset)
+    except Exception as e:
+        print "Error uploading dataset `{0}`: {1}".format(dataset['name'], unicode(e))
+    #TODO: Upload resources directly
 
 
 def main():
     parser = optparse.OptionParser()
-    parser.add_option("-b", "--base", default="http://localhost:5000/api",
+    parser.add_option("-b", "--base", default="http://localhost:5000",
             help="Base URL for CKAN API to post to [default: '%default']")
     parser.add_option("-a", "--apikey", default="tester",
             help="API key to post with [default: '%default']")
     options, args = parser.parse_args()
-    client = ckanclient.CkanClient(options.base, options.apikey)
+    client = ckanapi.RemoteCKAN(options.base, apikey=options.apikey,
+            user_agent='ckanapi/ckandemodata')
     create_demo_data(client)
 
 
