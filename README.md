@@ -8,6 +8,14 @@ Installation
     git clone https://github.com/ckan/ckan-demo-data.git
     pip install -r ckan-demo-data/pip-requirements.txt
 
+Old Versions of CKAN
+--------------------
+
+For older versions of CKAN(pre-2.2), please use the old branch:
+
+    git checkout old
+
+
 Usage
 -----
 
